@@ -1,5 +1,7 @@
 package com.adrian.ng;
 
+import java.math.BigDecimal;
+
 public abstract class Analytical implements RiskMeasure {
 
 
@@ -7,8 +9,8 @@ public abstract class Analytical implements RiskMeasure {
 
 
     @Override
-    public double getVar() {
-        return 0;
+    public BigDecimal getVar() {
+        return new BigDecimal(0);
     }
 
 
