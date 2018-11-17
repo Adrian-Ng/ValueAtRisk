@@ -1,0 +1,3 @@
+EW
+EWMA
+GARCH(1,1)

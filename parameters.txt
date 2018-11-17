@@ -1,0 +1,3 @@
+Confidence,0.95
+HistoricalYears,5
+TimeHorizonDays,1
