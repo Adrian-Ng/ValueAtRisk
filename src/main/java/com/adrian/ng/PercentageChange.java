@@ -16,24 +16,13 @@ public class PercentageChange {
         Iterator<HistoricalQuote> iterator = historicalQuotes.iterator();
         BigDecimal a = iterator.next().getClose();
         while (iterator.hasNext()){
-
-
-            //Calendar calendar = iterator.next().getDate();
-            //System.out.println(calendar.getTime());
-            //System.out.println(a);
-
             BigDecimal b = iterator.next().getClose();
-            //System.out.println(b);
             BigDecimal PriceDiff = a
                                     .subtract(b)
                                     .divide(a, RoundingMode.HALF_UP);
-
-            //System.out.println(PriceDiff);
             percentageChange.add(PriceDiff);
             a = b;
         }
-
-
         return percentageChange;
     }
 

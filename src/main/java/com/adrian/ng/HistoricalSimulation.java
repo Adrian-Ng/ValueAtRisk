@@ -3,30 +3,51 @@ package com.adrian.ng;
 import yahoofinance.Stock;
 
 import java.io.IOException;
+
 import java.math.BigDecimal;
-import java.math.BigInteger;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.TreeSet;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class HistoricalSimulation extends VaR implements RiskMeasure {
 
+
     @Override
     public BigDecimal getVar() {
-        try {
+        double Confidence = Double.parseDouble(hashParam.get("Confidence"));
+        double TimeHorizon = Math.sqrt(Integer.parseInt(hashParam.get("TimeHorizonDays")));
 
+        HashMap<String, ArrayList<BigDecimal>> stringArrayListHashMap = new HashMap<>();
+
+        BigDecimal currentPortfolio = BigDecimal.ZERO;
+        try {
             for (String sym : strSymbols) {
                 Stock stock = stockHashMap.get(sym);
-                System.out.printf("\t%s:\n", stock.getName());
-                BigDecimal currentPrice = stock.getQuote().getPreviousClose();
-
-                BigDecimal currentPortfolio = currentPrice.multiply(new BigDecimal(hashStockDeltas.get(sym)));
-
-                System.out.printf("Current Portfolio: %f\n", currentPortfolio);
-
                 ArrayList<BigDecimal> percentageChanges = PercentageChange.percentageChange(stock.getHistory());
-                ArrayList<BigDecimal> tomorrowPortfolio = percentageChanges
+                stringArrayListHashMap.put(sym, percentageChanges);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<BigDecimal> bigDecimalArrayList = stringArrayListHashMap.get(strSymbols[0]);
+        int size = bigDecimalArrayList.size();
+        ArrayList<BigDecimal> tomorrowPortfolio = new ArrayList<>(Collections.nCopies(size, BigDecimal.ZERO));
+
+        try {
+            for (String sym : strSymbols) {
+                Stock stock = stockHashMap.get(sym);
+                BigDecimal currentPrice = stock.getQuote().getPreviousClose();
+                // add to current portfolio
+                currentPortfolio = currentPortfolio.add(currentPrice.multiply(new BigDecimal(hashStockDeltas.get(sym))));
+
+                // get percentage changes of stock
+                ArrayList<BigDecimal> percentageChanges = PercentageChange.percentageChange(stock.getHistory());
+
+                // predict all possible tomorrow portfolio values per stock
+                ArrayList<BigDecimal> tomorrowStockDelta = percentageChanges
                         .stream()
                         .map(i -> i
                                 .add(BigDecimal.ONE)
@@ -34,29 +55,24 @@ public class HistoricalSimulation extends VaR implements RiskMeasure {
                                 .multiply(new BigDecimal(hashStockDeltas.get(sym))))
 
                         .collect(Collectors.toCollection(ArrayList::new));
-                Collections.sort(tomorrowPortfolio);
-/*
-                for (BigDecimal bigDecimal : percentageChanges)
-                    System.out.println(bigDecimal);
-*/
 
-
-                double Confidence = Double.parseDouble(hashParam.get("Confidence"));
-                double TimeHorizon = Math.sqrt(Integer.parseInt(hashParam.get("TimeHorizonDays")));
-                double index = (1-Confidence)* tomorrowPortfolio.size();
-
-                BigDecimal VaR = currentPortfolio
-                        .subtract(tomorrowPortfolio.get((int)index))
-                        .multiply(new BigDecimal(TimeHorizon));
-                return VaR;
+                for (int i = 0; i < size; i++)
+                    tomorrowPortfolio.set(i, tomorrowPortfolio.get(i).add(tomorrowStockDelta.get(i)));
             }
-        } catch (NullPointerException | IOException | ArithmeticException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        System.out.printf("CurrentPortfolio:%f\n", currentPortfolio);
 
-        return null;
+        Collections.sort(tomorrowPortfolio);
+       /* for(BigDecimal bd : tomorrowPortfolio)
+            System.out.println(bd);*/
+
+        double index = (1 - Confidence) * size;
+        BigDecimal VaR = currentPortfolio
+                .subtract(tomorrowPortfolio.get((int) index))
+                .multiply(new BigDecimal(TimeHorizon));
+        return VaR;
+
     }
-
-
 }

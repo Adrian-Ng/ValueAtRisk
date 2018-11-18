@@ -98,24 +98,10 @@ public class VaR extends Utils {
 
                 BigDecimal VaR = riskMeasure.getVar();
                 System.out.printf("VaR: %f", VaR);
-
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //String[] symbol = Utils.readTxt("symbol.txt") ;
-
-
-
-
-
-        /*for (String sym : symbol){
-           stockList.add(getStock(sym)) ;
-        }*/
-
-
     }
 
 }
