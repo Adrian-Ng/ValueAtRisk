@@ -4,7 +4,9 @@ import yahoofinance.Stock;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -21,22 +23,30 @@ public class HistoricalSimulation extends VaR implements RiskMeasure {
 
                 BigDecimal currentPortfolio = currentPrice.multiply(new BigDecimal(hashStockDeltas.get(sym)));
 
+                System.out.printf("Current Portfolio: %f\n", currentPortfolio);
+
                 ArrayList<BigDecimal> percentageChanges = PercentageChange.percentageChange(stock.getHistory());
                 ArrayList<BigDecimal> tomorrowPortfolio = percentageChanges
                         .stream()
                         .map(i -> i
+                                .add(BigDecimal.ONE)
                                 .multiply(currentPrice)
                                 .multiply(new BigDecimal(hashStockDeltas.get(sym))))
+
                         .collect(Collectors.toCollection(ArrayList::new));
+                Collections.sort(tomorrowPortfolio);
 /*
-                for (BigDecimal bigDecimal : tomorrowPortfolio)
-                    System.out.println(bigDecimal);*/
+                for (BigDecimal bigDecimal : percentageChanges)
+                    System.out.println(bigDecimal);
+*/
+
 
                 double Confidence = Double.parseDouble(hashParam.get("Confidence"));
                 double TimeHorizon = Math.sqrt(Integer.parseInt(hashParam.get("TimeHorizonDays")));
-                int index = (int) (1 - Confidence)* tomorrowPortfolio.size();
+                double index = (1-Confidence)* tomorrowPortfolio.size();
+
                 BigDecimal VaR = currentPortfolio
-                        .subtract(tomorrowPortfolio.get(index))
+                        .subtract(tomorrowPortfolio.get((int)index))
                         .multiply(new BigDecimal(TimeHorizon));
                 return VaR;
             }
