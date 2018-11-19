@@ -1,2 +1,3 @@
 Historical Simulation
-Analytical
+Analytical EW
+Analytical EWMA

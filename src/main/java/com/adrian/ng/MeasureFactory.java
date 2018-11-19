@@ -11,8 +11,11 @@ public class MeasureFactory extends VaR {
         if (strMeasure.equals("Historical Simulation"))
             return new HistoricalSimulation();
 
-        if (strMeasure.equals("Analytical"))
-            return new Analytical();
+        if (strMeasure.equals("Analytical EW"))
+            return new Analytical(strMeasure.split(" ")[1]);
+
+        if (strMeasure.equals("Analytical EWMA"))
+            return new Analytical(strMeasure.split(" ")[1]);
 
         return null;
     }

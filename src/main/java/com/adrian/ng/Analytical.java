@@ -1,17 +1,22 @@
 package com.adrian.ng;
 
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
+
 import yahoofinance.Stock;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 public class Analytical extends RiskMeasure {
+
+    private String volatilityMeasure;
+
+    public Analytical(String volatilityMeasure){
+        this.volatilityMeasure = volatilityMeasure;
+    }
 
 
     private BigDecimal getSquareNumber(BigDecimal squareNumber) {
@@ -44,7 +49,6 @@ public class Analytical extends RiskMeasure {
         int size = getSize();
 
 
-
         BigDecimal[][] matrixPcntChanges = new BigDecimal[strSymbols.length][size];
         try {
             for (int i = 0; i < strSymbols.length; i++) {
@@ -61,7 +65,7 @@ public class Analytical extends RiskMeasure {
         }
 
         VolatilityFactory volatilityFactory = new VolatilityFactory();
-        VolatilityAbstract volatilty = volatilityFactory.getType("EW");
+        VolatilityAbstract volatilty = volatilityFactory.getType(volatilityMeasure);
         BigDecimal[][] correlationMatrix = volatilty.getCorrelationMatrix(matrixPcntChanges);
 
         BigDecimal[] assetVolatilities = new BigDecimal[strSymbols.length];

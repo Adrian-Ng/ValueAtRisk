@@ -16,21 +16,4 @@ public class VolatilityEW extends VolatilityAbstract {
             sum = sum.add(xVector[i].multiply(yVector[i]));
         return sum.divide(new BigDecimal(elements - 1), ROUND_HALF_UP);
     }
-
-    @Override
-    public BigDecimal getVolatility(BigDecimal[] xVector, BigDecimal[] yVector) {
-        //https://stackoverflow.com/a/19743026/10526321
-        BigDecimal variance = getVariance(xVector, yVector);
-
-        BigDecimal x0 = BigDecimal.ZERO;
-        BigDecimal x1 = new BigDecimal(Math.sqrt(variance.doubleValue()));
-
-        while (!x0.equals(x1)) {
-            x0 = x1;
-            x1 = variance.divide(x0,  ROUND_HALF_UP);
-            x1 = x1.add(x0);
-            x1 = x1.divide(new BigDecimal(2),  ROUND_HALF_UP);
-        }
-        return x1;
-    }
 }

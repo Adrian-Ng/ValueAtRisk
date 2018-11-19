@@ -9,8 +9,4 @@ public class VolatilityGARCH extends VolatilityAbstract {
         return null;
     }
 
-    @Override
-    public BigDecimal getVolatility(BigDecimal[] xVector, BigDecimal[] yVector) {
-        return null;
-    }
 }
