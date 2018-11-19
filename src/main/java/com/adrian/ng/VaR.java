@@ -85,19 +85,14 @@ public class VaR extends Utils {
             System.out.println(pair.getKey() + " = " + pair.getValue());
             it.remove();
         }*/
-
-        Integer integers = hashStockDeltas.get("GOOG");
-
-
         MeasureFactory measureFactory = new MeasureFactory();
-
         try {
             for (String str : riskMeasures) {
                 System.out.printf("\t%s\n", str);
                 RiskMeasure riskMeasure = measureFactory.getMeasureType(str);
 
                 BigDecimal VaR = riskMeasure.getVar();
-                System.out.printf("VaR: %f", VaR);
+                System.out.printf("\t\tVaR: %f\n", VaR);
             }
         } catch (Exception e) {
             e.printStackTrace();

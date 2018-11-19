@@ -1,1 +1,2 @@
 Historical Simulation
+Analytical

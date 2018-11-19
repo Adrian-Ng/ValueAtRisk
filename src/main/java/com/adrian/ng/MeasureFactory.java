@@ -1,8 +1,5 @@
 package com.adrian.ng;
 
-import yahoofinance.Stock;
-
-import java.util.ArrayList;
 
 public class MeasureFactory extends VaR {
 
@@ -13,6 +10,9 @@ public class MeasureFactory extends VaR {
 
         if (strMeasure.equals("Historical Simulation"))
             return new HistoricalSimulation();
+
+        if (strMeasure.equals("Analytical"))
+            return new Analytical();
 
         return null;
     }

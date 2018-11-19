@@ -8,9 +8,7 @@ import java.util.*;
 
 public class PercentageChange {
 
-
-
-    public static ArrayList<BigDecimal> percentageChange(List<HistoricalQuote> historicalQuotes) {
+    public static ArrayList<BigDecimal> getArrayList(List<HistoricalQuote> historicalQuotes) {
         ArrayList<BigDecimal> percentageChange = new ArrayList<>();
 
         Iterator<HistoricalQuote> iterator = historicalQuotes.iterator();
@@ -24,6 +22,12 @@ public class PercentageChange {
             a = b;
         }
         return percentageChange;
+    }
+
+    public static BigDecimal[] getArray (List<HistoricalQuote> historicalQuotes){
+        ArrayList<BigDecimal> percentageChange = getArrayList(historicalQuotes);
+        int size = percentageChange.size();
+        return percentageChange.toArray(new BigDecimal[size]);
     }
 
 
