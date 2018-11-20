@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 public class VolatilityGARCH extends VolatilityAbstract {
 
     @Override
-    public BigDecimal getVariance(BigDecimal[] xVector, BigDecimal[] yVector) {
-        return null;
+    public double getVariance(double[] xVector, double[] yVector) {
+        return 0;
     }
 
 }

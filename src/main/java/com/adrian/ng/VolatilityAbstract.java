@@ -1,46 +1,62 @@
 package com.adrian.ng;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import static java.math.BigDecimal.ROUND_HALF_UP;
 
 public abstract class VolatilityAbstract {
 
-    public BigDecimal[][] getCorrelationMatrix(BigDecimal[][] matrix) {
-
+    public double[][] getCorrelationMatrix(double[][] matrix) {
         int numCol = matrix.length;
-        BigDecimal[][] correlationMatrix = new BigDecimal[numCol][numCol];
+        double[][] correlationMatrix = new double[numCol][numCol];
 
         for (int i = 0; i < numCol; i++) {
             for (int j = 0; j < numCol; j++) {
-                BigDecimal covXY = getVariance(matrix[i], matrix[j]);
-                BigDecimal sigmaX = getVolatility(matrix[i], matrix[i]);
-                BigDecimal sigmaY = getVolatility(matrix[j], matrix[j]);
-                correlationMatrix[i][j] = covXY.divide(sigmaX.multiply(sigmaY), BigDecimal.ROUND_HALF_UP);
+                double covXY = getVariance(matrix[i], matrix[j]);
+                double sigmaX = getVolatility(matrix[i], matrix[i]);
+                double sigmaY = getVolatility(matrix[j], matrix[j]);
+                correlationMatrix[i][j] = covXY / (sigmaX * (sigmaY));
             }
-            System.out.println("\t\t" + Arrays.toString(correlationMatrix[i]));
+            //System.out.printf("\t\tCorrelation Matrix:\n\t\t%s\n", Arrays.toString(correlationMatrix[i]));
         }
         return correlationMatrix;
     }
 
+    public double[][] getCovarianceMatrix(double[][] matrix) {
+        int numCol = matrix.length;
+        double[][] covarianceMatrix = new double[numCol][numCol];
 
-    abstract public BigDecimal getVariance(BigDecimal[] xVector, BigDecimal[] yVector);
-
-    public BigDecimal getVolatility(BigDecimal[] xVector, BigDecimal[] yVector) {
-        //https://stackoverflow.com/a/19743026/10526321
-        BigDecimal variance = getVariance(xVector, yVector);
-
-        BigDecimal x0 = BigDecimal.ZERO;
-        BigDecimal x1 = new BigDecimal(Math.sqrt(variance.doubleValue()));
-
-        while (!x0.equals(x1)) {
-            x0 = x1;
-            x1 = variance.divide(x0, ROUND_HALF_UP);
-            x1 = x1.add(x0);
-            x1 = x1.divide(new BigDecimal(2), ROUND_HALF_UP);
+        for (int i = 0; i < numCol; i++) {
+            for (int j = 0; j < numCol; j++)
+                covarianceMatrix[i][j] = getVariance(matrix[i], matrix[j]);
+            //System.out.printf("\t\tCovariance Matrix\t\t\n%s\n", Arrays.toString(covarianceMatrix[i]));
         }
-        return x1;
+        return covarianceMatrix;
+    }
+
+    public double[][] getCholeskyDecomposition(double[][] matrix) {
+        double[][] covarianceMatrix = getCovarianceMatrix(matrix);
+        int numCol = matrix.length;
+        double[][] choleskyMatrix = new double[numCol][numCol];
+
+        for (int i = 0; i < covarianceMatrix.length; i++)
+            for (int j = 0; j <= i; j++) {
+                Double sum = 0.0;
+                for (int k = 0; k < j; k++)
+                    sum += choleskyMatrix[i][k] * choleskyMatrix[j][k];
+                if (i == j)
+                    choleskyMatrix[i][j] = Math.sqrt(covarianceMatrix[i][j] - sum);
+                else
+                    choleskyMatrix[i][j] = (covarianceMatrix[i][j] - sum) / choleskyMatrix[j][j];
+                //System.out.printf("\t\tCholesky Matrix\t\t\n%s\n",Arrays.toString(covarianceMatrix[i]));
+            }
+        return choleskyMatrix;
+    }
+
+    abstract public double getVariance(double[] xVector, double[] yVector);
+
+    public double getVolatility(double[] xVector, double[] yVector) {
+        double variance = getVariance(xVector, yVector);
+        return Math.sqrt(variance);
     }
 
 }
+
+

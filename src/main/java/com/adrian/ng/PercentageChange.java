@@ -8,8 +8,8 @@ import java.util.*;
 
 public class PercentageChange {
 
-    public static ArrayList<BigDecimal> getArrayList(List<HistoricalQuote> historicalQuotes) {
-        ArrayList<BigDecimal> percentageChange = new ArrayList<>();
+    public static ArrayList<Double> getArrayList(List<HistoricalQuote> historicalQuotes) {
+        ArrayList<Double> percentageChange = new ArrayList<>();
 
         Iterator<HistoricalQuote> iterator = historicalQuotes.iterator();
         BigDecimal a = iterator.next().getClose();
@@ -18,16 +18,21 @@ public class PercentageChange {
             BigDecimal PriceDiff = a
                                     .subtract(b)
                                     .divide(a, RoundingMode.HALF_UP);
-            percentageChange.add(PriceDiff);
+            percentageChange.add(PriceDiff.doubleValue());
             a = b;
         }
         return percentageChange;
     }
 
-    public static BigDecimal[] getArray (List<HistoricalQuote> historicalQuotes){
-        ArrayList<BigDecimal> percentageChange = getArrayList(historicalQuotes);
+    public static double[] getArray (List<HistoricalQuote> historicalQuotes){
+        ArrayList<Double> percentageChange = getArrayList(historicalQuotes);
         int size = percentageChange.size();
-        return percentageChange.toArray(new BigDecimal[size]);
+        double[] doubles = new double[size];
+
+        for(int i = 0; i < size; i++)
+            doubles[i] = percentageChange.get(i);
+
+        return doubles;
     }
 
 

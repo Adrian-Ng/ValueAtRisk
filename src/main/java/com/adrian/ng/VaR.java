@@ -8,7 +8,6 @@ import yahoofinance.histquotes.Interval;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 
 public class VaR extends Utils {
@@ -18,13 +17,17 @@ public class VaR extends Utils {
     public static HashMap<String, Stock> stockHashMap;
     public static HashMap<String, Integer> hashStockDeltas = new HashMap<>();
     public static HashMap<String, Integer> hashOptionDeltas = new HashMap<>();
+    public static double currentPortfolio;
+    public static int countAsset;
 
     static {
         strSymbols = readTxt("symbol.txt");
+        countAsset = strSymbols.length;
         hashParam = readParameters();
         riskMeasures = readTxt("RiskMeasures.txt");
         stockHashMap = getStock();
         readDeltas();
+        currentPortfolio = valuePortfolio();
     }
 
     private static HashMap<String, String> readParameters() {
@@ -45,12 +48,10 @@ public class VaR extends Utils {
                     .append(sym)
                     .append(".txt")
                     .toString();
-
             String[] strDeltas = readTxt(filename);
-
             try {
-                hashStockDeltas.put(sym,    Integer.parseInt(strDeltas[0]));
-                hashOptionDeltas.put(sym,   Integer.parseInt(strDeltas[1]));
+                hashStockDeltas.put(sym, Integer.parseInt(strDeltas[0]));
+                hashOptionDeltas.put(sym, Integer.parseInt(strDeltas[1]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,6 +78,23 @@ public class VaR extends Utils {
         return stockArrayList;
     }
 
+    private static double valuePortfolio() {
+        double currentPortfolio = 0.0;
+        try {
+            for (String sym : strSymbols) {
+                Stock stock = stockHashMap.get(sym);
+                double currentPrice = stock.getQuote()
+                        .getPreviousClose()
+                        .doubleValue();
+                // add to current portfolio
+                currentPortfolio += currentPrice * hashStockDeltas.get(sym);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currentPortfolio;
+    }
+
 
     public static void main(String[] args) {
         /*Iterator it = hashParam.entrySet().iterator();
@@ -85,18 +103,25 @@ public class VaR extends Utils {
             System.out.println(pair.getKey() + " = " + pair.getValue());
             it.remove();
         }*/
+
+        HashMap<String, Double> varEstimates = new HashMap<>();
+
         MeasureFactory measureFactory = new MeasureFactory();
         try {
             for (String str : riskMeasures) {
                 System.out.printf("\t%s\n", str);
                 RiskMeasure riskMeasure = measureFactory.getMeasureType(str);
 
-                BigDecimal VaR = riskMeasure.getVar();
+                Double VaR = riskMeasure.getVar();
                 System.out.printf("\t\tVaR: %f\n", VaR);
+
+                varEstimates.put(str, VaR);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
 
+
+
+    }
 }

@@ -17,6 +17,12 @@ public class MeasureFactory extends VaR {
         if (strMeasure.equals("Analytical EWMA"))
             return new Analytical(strMeasure.split(" ")[1]);
 
+        if (strMeasure.equals("MonteCarlo EW"))
+            return new MonteCarlo(strMeasure.split(" ")[1]);
+
+        if (strMeasure.equals("MonteCarlo EWMA"))
+            return new MonteCarlo(strMeasure.split(" ")[1]);
+
         return null;
     }
 

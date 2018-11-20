@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import static java.math.BigDecimal.ROUND_HALF_UP;
+
 public class Utils {
 
     public static BigDecimal[][] transposeBigDecimal(BigDecimal[][] matrix) {
@@ -19,6 +21,20 @@ public class Utils {
             for (int y = 0; y < m; y++)
                 transposedMatrix[x][y] = matrix[y][x];
         return transposedMatrix;
+    }
+
+    public static BigDecimal getSquareNumber(BigDecimal squareNumber) {
+        ////https://stackoverflow.com/a/19743026/10526321
+        BigDecimal x0 = BigDecimal.ZERO;
+        BigDecimal x1 = new BigDecimal(Math.sqrt(squareNumber.doubleValue()));
+
+        while (!x0.equals(x1)) {
+            x0 = x1;
+            x1 = squareNumber.divide(x0, ROUND_HALF_UP);
+            x1 = x1.add(x0);
+            x1 = x1.divide(new BigDecimal(2), ROUND_HALF_UP);
+        }
+        return x1;
     }
 
     public static String[] readTxt(String filename) {
