@@ -1,14 +1,11 @@
 package com.adrian.ng;
 
 public class VolatilityEWMA extends VolatilityAbstract {
-
     private static double lambda;
-    private static double adbmal;
-
     static {
+        // Per JP Morgan's RiskMetrics
         lambda = 0.94;
     }
-
     @Override
     public double getVariance(double[] xVector, double[] yVector) {
         int elements = xVector.length;

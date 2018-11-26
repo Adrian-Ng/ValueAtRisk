@@ -7,6 +7,6 @@ public class VolatilityEW extends VolatilityAbstract {
         int elements = xVector.length;
         for (int i = 0; i < elements; i++)
             sum += (xVector[i] * yVector[i]);
-        return sum /(elements - 1);
+        return sum /elements;
     }
 }

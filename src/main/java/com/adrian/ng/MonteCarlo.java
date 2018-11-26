@@ -53,7 +53,7 @@ public class MonteCarlo extends RiskMeasure {
     public double getVar() {
         double Confidence = Double.parseDouble(hashParam.get("Confidence"));
         double TimeHorizon = Math.sqrt(Integer.parseInt(hashParam.get("TimeHorizonDays")));
-        int size = getSize();
+        //int size = getSize();
         ArrayList<Future<double[]>> list = new ArrayList<>();
         ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -74,13 +74,10 @@ public class MonteCarlo extends RiskMeasure {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //System.out.println(91);
         // get cholesky decomposition (square root of covariance matrix)
         VolatilityFactory volatilityFactory = new VolatilityFactory();
         VolatilityAbstract volatilty = volatilityFactory.getType(volatilityMeasure);
         double[][] choleskyMatrix = volatilty.getCholeskyDecomposition(matrixPcntChanges);
-        //System.out.println(96);
-        // monte carlo - simulate paths
 
         // Callable Future - run random walks in parallel
         ArrayList<double[]> simulatedPrices = new ArrayList<>();

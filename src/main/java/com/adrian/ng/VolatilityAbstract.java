@@ -1,6 +1,8 @@
 package com.adrian.ng;
 
 
+import java.util.Arrays;
+
 public abstract class VolatilityAbstract {
 
     public double[][] getCorrelationMatrix(double[][] matrix) {
@@ -36,7 +38,7 @@ public abstract class VolatilityAbstract {
         int numCol = matrix.length;
         double[][] choleskyMatrix = new double[numCol][numCol];
 
-        for (int i = 0; i < covarianceMatrix.length; i++)
+        for (int i = 0; i < covarianceMatrix.length; i++) {
             for (int j = 0; j <= i; j++) {
                 Double sum = 0.0;
                 for (int k = 0; k < j; k++)
@@ -45,8 +47,9 @@ public abstract class VolatilityAbstract {
                     choleskyMatrix[i][j] = Math.sqrt(covarianceMatrix[i][j] - sum);
                 else
                     choleskyMatrix[i][j] = (covarianceMatrix[i][j] - sum) / choleskyMatrix[j][j];
-                //System.out.printf("\t\tCholesky Matrix\t\t\n%s\n",Arrays.toString(covarianceMatrix[i]));
             }
+            //System.out.printf("\t\tCholesky Matrix\t\t\n%s\n",Arrays.toString(choleskyMatrix[i]));
+        }
         return choleskyMatrix;
     }
 

@@ -24,16 +24,14 @@ public class PercentageChange {
         return percentageChange;
     }
 
-    public static double[] getArray (List<HistoricalQuote> historicalQuotes){
+    public static double[] getArray(List<HistoricalQuote> historicalQuotes) {
         ArrayList<Double> percentageChange = getArrayList(historicalQuotes);
         int size = percentageChange.size();
         double[] doubles = new double[size];
 
-        for(int i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
             doubles[i] = percentageChange.get(i);
 
         return doubles;
     }
-
-
 }

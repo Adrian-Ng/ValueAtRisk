@@ -7,6 +7,7 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class Analytical extends RiskMeasure {
 
     private String volatilityMeasure;
+
     public Analytical(String volatilityMeasure) {
         this.volatilityMeasure = volatilityMeasure;
     }
@@ -15,14 +16,12 @@ public class Analytical extends RiskMeasure {
     public double getVar() {
 
         NormalDistribution distribution = new NormalDistribution(0, 1);
-
         double Confidence = Double.parseDouble(hashParam.get("Confidence"));
         double TimeHorizon = Math.sqrt(Integer.parseInt(hashParam.get("TimeHorizonDays")));
         double riskPercentile = -distribution.inverseCumulativeProbability(1 - Confidence);
 
-        Double[] currentPrices = new Double[countAsset];
-        Double[] stockDelta = new Double[countAsset];
-        int size = getSize();
+        double[] currentPrices = new double[countAsset];
+        double[] stockDelta = new double[countAsset];
 
         double[][] matrixPcntChanges = new double[countAsset][size];
         try {
@@ -39,13 +38,9 @@ public class Analytical extends RiskMeasure {
             e.printStackTrace();
         }
 
-        VolatilityFactory volatilityFactory = new VolatilityFactory();
-        VolatilityAbstract volatility = volatilityFactory.getType(volatilityMeasure);
-        double[][] correlationMatrix = volatility.getCorrelationMatrix(matrixPcntChanges);
-
-        double[] assetVolatilities = new double[countAsset];
-        for (int j = 0; j < countAsset; j++)
-            assetVolatilities[j] = volatility.getVolatility(matrixPcntChanges[j], matrixPcntChanges[j]);
+        double[][] covarianceMatrix = new VolatilityFactory()
+                .getType(volatilityMeasure)
+                .getCovarianceMatrix(matrixPcntChanges);
 
         //Compute linear combination
         double sum = 0.0;
@@ -55,14 +50,11 @@ public class Analytical extends RiskMeasure {
                         * stockDelta[j]
                         * currentPrices[i]
                         * currentPrices[j]
-                        * correlationMatrix[i][j]
-                        * assetVolatilities[i]
-                        * assetVolatilities[j];
+                        * covarianceMatrix[i][j];
         //Computer VaR
         double VaR = Math.sqrt(TimeHorizon)
                 * riskPercentile
                 * Math.sqrt(sum);
-
         return VaR;
     }
 

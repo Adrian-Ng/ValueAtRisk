@@ -19,7 +19,7 @@ public class VaR extends Utils {
     public static HashMap<String, Integer> hashOptionDeltas = new HashMap<>();
     public static double currentPortfolio;
     public static int countAsset;
-
+    public static int size;
     static {
         strSymbols = readTxt("symbol.txt");
         countAsset = strSymbols.length;
@@ -28,6 +28,7 @@ public class VaR extends Utils {
         stockHashMap = getStock();
         readDeltas();
         currentPortfolio = valuePortfolio();
+        size = getSize();
     }
 
     private static HashMap<String, String> readParameters() {
@@ -95,15 +96,19 @@ public class VaR extends Utils {
         return currentPortfolio;
     }
 
+    public static int getSize() {
+        Stock stck = stockHashMap.get(strSymbols[0]);
+        int size = 0;
+        try {
+            size = stck.getHistory().size() - 1;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return size;
+    }
+
 
     public static void main(String[] args) {
-        /*Iterator it = hashParam.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
-            it.remove();
-        }*/
-
         HashMap<String, Double> varEstimates = new HashMap<>();
 
         MeasureFactory measureFactory = new MeasureFactory();
@@ -120,8 +125,5 @@ public class VaR extends Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
     }
 }
